@@ -1,0 +1,49 @@
+#!/bin/bash
+
+# Function to check if a number is prime
+is_prime() {
+    local n=$1
+    if [ $n -lt 2 ]; then
+        return 1
+    fi
+    for ((i = 2; i * i <= n; i++)); do
+        if [ $((n % i)) -eq 0 ]; then
+            return 1
+        fi
+    done
+    return 0
+}
+
+# Function to factorize a number
+factorize() {
+    local n=$1
+    local p=2
+    while [ $p -le $n ]; do
+        if [ $((n % p)) -eq 0 ] && is_prime $p; then
+            local q=$((n / p))
+            if is_prime $q; then
+                echo "$n=$p*$q"
+                return
+            fi
+        fi
+        p=$((p + 1))
+    done
+    echo "Cannot factorize $n into two primes"
+}
+
+# Main function
+main() {
+    if [ $# -ne 1 ]; then
+        echo "Usage: $0 <file>"
+        exit 1
+    fi
+
+    filename="$1"
+    while read -r number; do
+        factorize "$number"
+    done < "$filename"
+}
+
+# Run the main function with the input file
+main "$1"
+
